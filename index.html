@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking Da Portelinha</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Ranking Da Portelinha</h1>
+        <button class="btn" onclick="addPlayer()">+ Novo Jogador</button>
+    </div>
+
+    <div class="cards">
+        <div class="card">
+            <h3>Total de Gols</h3>
+            <span id="totalGols">0</span>
+        </div>
+
+        <div class="card">
+            <h3>Assistências</h3>
+            <span id="totalAssist">0</span>
+        </div>
+
+        <div class="card">
+            <h3>Partidas</h3>
+            <span id="totalPartidas">0</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Classificação Geral (Clique nos números para editar)</h2>
+
+        <div class="table-wrapper">
+            <table class="table" id="tabela">
+                <thead>
+                    <tr>
+                        <th>Pos</th>
+                        <th>Jogador</th>
+                        <th>Partidas</th>
+                        <th>Gols</th>
+                        <th>Assistências</th>
+                    </tr>
+                </thead>
+
+                <tbody oninput="atualizarTotais()">
+
+                    <tr>
+                        <td>🥇</td>
+                        <td>Pedrinho</td>
+                        <td contenteditable="true" class="editable">0</td>
+                        <td contenteditable="true" class="editable">0</td>
+                        <td contenteditable="true" class="editable">0</td>
+                    </tr>
+
+                    <tr>
+                        <td>2</td>
+                        <td>Adri7</td>
+                        <td contenteditable="true" class="editable">0</td>
+                        <td contenteditable="true" class="editable">0</td>
+                        <td contenteditable="true" class="editable">0</td>
+                    </tr>
+
+                    <tr>
+                        <td>3</td>
+                        <td>Micael</td>
+                        <td contenteditable="true" class="editable">0</td>
+                        <td contenteditable="true" class="editable">0</td>
+                        <td contenteditable="true" class="editable">0</td>
+                    </tr>
+
+                    <tr>
+                        <td>4</td>
+                        <td>Lucas</td>
+                        <td contenteditable="true" class="editable">0</td>
+                        <td contenteditable="true" class="editable">0</td>
+                        <td contenteditable="true" class="editable">0</td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer">
+        © 2024 Craques do Campo | Edição Portelinha
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
