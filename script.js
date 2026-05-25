@@ -1,60 +1,152 @@
-window.onload = atualizarTotais;
+const SUPABASE_URL = "https://wwtmsaywdtqcwmpmadhi.supabase.co/rest/v1/";
+const SUPABASE_KEY = "sb_publishable_nXxvoCa6r8gZVAxMdiT2EA_IcUxT6Ir";
 
-function addPlayer() {
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 
-    let nome = prompt("Nome do novo craque:");
+window.onload = carregarJogadores;
 
-    if (!nome) return;
+async function carregarJogadores() {
 
-    let tabela = document
-        .getElementById("tabela")
-        .getElementsByTagName("tbody")[0];
+    const { data, error } = await supabaseClient
+        .from("jogadores")
+        .select("*")
+        .order("gols", { ascending: false });
 
-    let novaLinha = tabela.insertRow();
+    if (error) {
+        console.error(error);
+        return;
+    }
 
-    let pos = tabela.rows.length;
+    const tbody = document.querySelector("#tabela tbody");
 
-    novaLinha.innerHTML = `
-        <td>${pos}</td>
-        <td>${nome}</td>
-        <td contenteditable="true" class="editable">0</td>
-        <td contenteditable="true" class="editable">0</td>
-        <td contenteditable="true" class="editable">0</td>
-    `;
+    tbody.innerHTML = "";
+
+    data.forEach((jogador, index) => {
+
+        const linha = document.createElement("tr");
+
+        linha.innerHTML = `
+            <td>${index + 1}</td>
+
+            <td>${jogador.nome}</td>
+
+            <td contenteditable="true"
+                class="editable"
+                data-id="${jogador.id}"
+                data-col="partidas">
+                ${jogador.partidas}
+            </td>
+
+            <td contenteditable="true"
+                class="editable"
+                data-id="${jogador.id}"
+                data-col="gols">
+                ${jogador.gols}
+            </td>
+
+            <td contenteditable="true"
+                class="editable"
+                data-id="${jogador.id}"
+                data-col="assistencias">
+                ${jogador.assistencias}
+            </td>
+        `;
+
+        tbody.appendChild(linha);
+    });
+
+    ativarEdicao();
 
     atualizarTotais();
 }
 
+async function addPlayer() {
+
+    const nome = prompt("Nome do novo jogador:");
+
+    if (!nome) return;
+
+    const { error } = await supabaseClient
+        .from("jogadores")
+        .insert([
+            {
+                nome: nome,
+                partidas: 0,
+                gols: 0,
+                assistencias: 0
+            }
+        ]);
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    carregarJogadores();
+}
+
+function ativarEdicao() {
+
+    const campos = document.querySelectorAll(".editable");
+
+    campos.forEach(campo => {
+
+        campo.addEventListener("blur", async () => {
+
+            const id = campo.dataset.id;
+
+            const coluna = campo.dataset.col;
+
+            const valor = parseInt(
+                campo.innerText.replace(/\D/g, "")
+            ) || 0;
+
+            const { error } = await supabaseClient
+                .from("jogadores")
+                .update({
+                    [coluna]: valor
+                })
+                .eq("id", id);
+
+            if (error) {
+                console.error(error);
+                return;
+            }
+
+            atualizarTotais();
+        });
+    });
+}
+
 function atualizarTotais() {
 
-    let tabela = document
-        .getElementById("tabela")
-        .getElementsByTagName("tbody")[0];
+    const linhas = document.querySelectorAll("#tabela tbody tr");
 
     let gols = 0;
     let assist = 0;
     let partidas = 0;
 
-    for (let i = 0; i < tabela.rows.length; i++) {
+    linhas.forEach(linha => {
 
-        let p = parseInt(
-            tabela.rows[i].cells[2].innerText.replace(/\D/g, '')
+        partidas += parseInt(
+            linha.cells[2].innerText
         ) || 0;
 
-        let g = parseInt(
-            tabela.rows[i].cells[3].innerText.replace(/\D/g, '')
+        gols += parseInt(
+            linha.cells[3].innerText
         ) || 0;
 
-        let a = parseInt(
-            tabela.rows[i].cells[4].innerText.replace(/\D/g, '')
+        assist += parseInt(
+            linha.cells[4].innerText
         ) || 0;
-
-        partidas += p;
-        gols += g;
-        assist += a;
-    }
+    });
 
     document.getElementById("totalGols").innerText = gols;
+
     document.getElementById("totalAssist").innerText = assist;
+
     document.getElementById("totalPartidas").innerText = partidas;
 }
